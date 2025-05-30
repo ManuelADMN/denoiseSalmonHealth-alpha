@@ -1,0 +1,15 @@
+# TensorFlow con soporte GPU (versión 2.11.0 compatible con CUDA 11.2)
+tensorflow==2.11.0
+
+# Procesamiento científico
+numpy==1.24.4
+matplotlib>=3.5.0
+scipy>=1.10.0          # Necesario por ImageDataGenerator
+
+# Manejo de imágenes
+Pillow>=9.0.0          # Usado internamente por Keras y Streamlit
+
+# Interfaz web
+streamlit>=1.10.0
+
+

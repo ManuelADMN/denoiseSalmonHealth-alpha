@@ -1,0 +1,32 @@
+View-Only Source License (VOSL) v1.0  
+Licencia de Solo Visualización del Código (LSVC) v1.0
+
+© 2025 Manuel
+
+--- ENGLISH ---
+
+Permission is hereby granted to **view** and **inspect** the source code of this repository
+for **personal** or **educational** purposes **only**.  
+Any of the following actions are **strictly prohibited** without prior written consent of the author:
+
+1. Copying, forking or cloning this repository for personal or third-party use.  
+2. Modifying, adapting, or creating derivative works based on this code.  
+3. Distributing, sublicensing or publishing any part or all of the code.  
+4. Using this code in commercial or non-commercial projects.
+
+All actions not expressly permitted are **forbidden**.  
+No warranty is provided. All rights reserved.
+
+--- ESPAÑOL ---
+
+Se concede permiso para **ver** e **inspeccionar** el código fuente de este repositorio
+con fines **personales** o **educativos** **únicamente**.  
+Cualquiera de las siguientes acciones está **estrictamente prohibida** sin autorización escrita previa del autor:
+
+1. Copiar, bifurcar (fork) o clonar este repositorio para uso propio o ajeno.  
+2. Modificar, adaptar o derivar trabajos basados en este código.  
+3. Distribuir, sublicenciar o publicar fragmentos o la totalidad del código.  
+4. Utilizar este código en proyectos comerciales o no comerciales.
+
+Todas las acciones no expresamente permitidas están **prohibidas**.  
+No se ofrece ninguna garantía. Todos los derechos reservados.
