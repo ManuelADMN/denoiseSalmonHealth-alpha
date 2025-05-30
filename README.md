@@ -1,21 +1,26 @@
-
-# 🧠 DenoiseSH 0.1.0-alpha(DenoiseSalmonHealth) - Autoencoder para imágenes de salmón
+# 🧠 DenoiseSH 0.1.0-alpha (DenoiseSalmonHealth) - Autoencoder para imágenes de salmón
 
 Este proyecto implementa una app visual interactiva en Streamlit para entrenar un **autoencoder convolucional** que detecta y reconstruye imágenes de salmón saludables e infectados, ideal para experimentación con **biotecnología y salud acuícola**.
 
-Incluye:
-- Preprocesamiento de datasets de imágenes con subcarpetas por clase
-- Entrenamiento visual con actualización de gráfica en tiempo real
-- Reconstrucciones visuales al final del entrenamiento
-- Interfaz amigable para configurar hiperparámetros y transformar datasets
+---
+
+## 🧠 Conocimientos utilizados
+
+* **Lenguaje de programación:** Python 3.9 / 3.10
+* **Frameworks y librerías de ML/DL:** TensorFlow 2.11, Keras
+* **Procesamiento de imágenes:** NumPy, Pandas, Matplotlib, Scikit-Image, OpenCV
+* **Interfaz web interactiva:** Streamlit
+* **Técnicas de redes neuronales:** Autoencoders convolucionales, Data Augmentation, Callbacks
+* **GPU y aceleración:** CUDA Toolkit 11.2, cuDNN 8.1
+* **Control de versiones y colaboración:** Git, GitHub
 
 ---
 
 ## ⚙️ Requisitos
 
-- Python **3.9 o 3.10**
-- GPU compatible con CUDA (opcional, pero recomendado)
-- pip
+* Python **3.9 o 3.10**
+* GPU compatible con CUDA (opcional, pero recomendado)
+* pip
 
 ---
 
@@ -29,7 +34,7 @@ venv\Scripts\activate
 # En MacOS/Linux
 python3 -m venv venv
 source venv/bin/activate
-````
+```
 
 ---
 
@@ -124,4 +129,5 @@ print(device_lib.list_local_devices())
 Proyecto creado con amor por un estudiante de Ingeniería en Informática amante de la IA y la innovación.
 
 ---
+
 Este repositorio es de solo lectura; para usos o contribuciones, contáctame.
