@@ -1,4 +1,4 @@
-# 🧠 DenoiseSH 0.1.0-alpha (DenoiseSalmonHealth) - Autoencoder para imágenes de salmón
+# 🧠 DenoiseSH 0.2.0-alpha (DenoiseSalmonHealth) - Autoencoder para imágenes de salmón
 
 Este proyecto implementa una app visual interactiva en Streamlit para entrenar un **autoencoder convolucional** que detecta y reconstruye imágenes de salmón saludables e infectados, ideal para experimentación con **biotecnología y salud acuícola**.
 
