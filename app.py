@@ -13,6 +13,7 @@ from funcionesModelo import (
 from datasetTransformer import transformar_dataset
 import numpy as np
 import os
+import tensorflow as tf
 
 def pestaña_autoencoder():
     st.title("🧠 Autoencoder Visual")
@@ -29,30 +30,42 @@ def pestaña_autoencoder():
     autoencoder = None
     encoder = None
     decoder = None
+    callbacks_list = None
 
     # Entrada para carpeta del dataset
     st.markdown("### 📁 Selecciona carpeta con dataset")
-    dataset_path = st.text_input("Ruta del dataset con subcarpetas de clases (FreshFish, InfectedFish, etc.)", "")
+    dataset_path = st.text_input(
+        "Ruta del dataset con subcarpetas de clases (FreshFish, InfectedFish, etc.)",
+        ""
+    )
 
     if not dataset_path.strip():
         st.warning("⚠️ Por favor, ingresa una ruta válida para comenzar.")
         return
 
+    # Intentar cargar datos
     try:
-        datos = cargar_datos(dataset_path, batch_size=batch_size)
+        x_train, x_val = cargar_datos(dataset_path, batch_size=batch_size)
     except Exception as e:
         st.error(f"❌ Error al cargar datos: {str(e)}")
         return
 
-    # Detectar si datos son generadores
-    x_train = datos[0]
-    x_test  = datos[1]
-    batch = next(x_train)
-    input_shape = batch[0].shape[1:]
+    # Detectar input_shape a partir de un batch
+    try:
+        ejemplo_batch = next(x_train)
+    except StopIteration:
+        st.error("❌ El generador de entrenamiento está vacío.")
+        return
 
+    input_shape = ejemplo_batch[0].shape[1:]  # (H, W, C)
+
+    # Si el usuario desea cargar un modelo existente
     if usar_modelo_existente:
         st.markdown("### 🧠 Carga del modelo")
-        carpeta_modelo = st.text_input("📂 Ruta de la carpeta del modelo guardado", "modelos_guardados")
+        carpeta_modelo = st.text_input(
+            "📂 Ruta de la carpeta del modelo guardado",
+            "modelos_guardados"
+        )
 
         if carpeta_modelo.strip():
             try:
@@ -63,60 +76,82 @@ def pestaña_autoencoder():
         else:
             st.warning("⚠️ Ingresa una ruta válida para el modelo.")
             return
-    else:
-        encoder, decoder, autoencoder = construir_modelo(input_shape=input_shape, latent_dim=latent_dim)
+
+    # Si no usa modelo existente, construye uno nuevo
+    if not usar_modelo_existente:
+        encoder, decoder, autoencoder, callbacks_list = construir_modelo(
+            input_shape=input_shape,
+            latent_dim=latent_dim
+        )
 
     # Historial en session_state
-    if 'hist' not in st.session_state:
-        st.session_state.hist = {'loss': [], 'val_loss': []}
-    if 'entrenado' not in st.session_state:
+    if "hist" not in st.session_state:
+        st.session_state.hist = {"loss": [], "val_loss": []}
+    if "entrenado" not in st.session_state:
         st.session_state.entrenado = False
 
     # Contenedor para la gráfica en tiempo real
     chart_container = st.empty()
+
     def actualizar_grafico(epoch, loss, val_loss):
-        st.session_state.hist['loss'].append(loss)
-        st.session_state.hist['val_loss'].append(val_loss)
+        st.session_state.hist["loss"].append(loss)
+        st.session_state.hist["val_loss"].append(val_loss)
         fig = graficar_entrenamiento(st.session_state.hist)
         chart_container.pyplot(fig)
 
-    # Botones de control (solo si es nuevo entrenamiento)
+    # Botones de control (solo si NO se carga modelo existente)
     if not usar_modelo_existente:
         col1, col2 = st.columns(2)
         with col1:
             if st.button("🚀 Iniciar entrenamiento"):
-                st.session_state.hist = {'loss': [], 'val_loss': []}
+                # Reiniciar historial
+                st.session_state.hist = {"loss": [], "val_loss": []}
+
+                # Llamada a entrenar_modelo con callbacks del modelo y callback de gráfica
                 entrenar_modelo(
-                    autoencoder, x_train,
+                    autoencoder,
+                    x_train,
+                    x_val,
                     epocas=epocas,
-                    batch_size=batch_size,
-                    callback=actualizar_grafico
+                    callbacks_list=callbacks_list,
+                    callback_plot=actualizar_grafico,
                 )
                 st.session_state.entrenado = True
+
         with col2:
             if st.button("🛑 Detener entrenamiento"):
                 detener_entrenamiento()
 
-    # Botón para guardar modelo
+    # Botón para guardar modelo entrenado
     if not usar_modelo_existente and st.session_state.entrenado:
         st.markdown("### 💾 Guardar modelo entrenado")
         ruta_guardado = st.text_input("📁 Carpeta para guardar modelos", "modelos_guardados")
         if st.button("✅ Guardar modelo"):
             try:
-                guardar_modelos(encoder, decoder, autoencoder, ruta=ruta_guardado)
+                guardar_modelos(encoder, decoder, autoencoder, carpeta_salida=ruta_guardado)
                 st.success(f"✅ Modelos guardados en: `{ruta_guardado}`")
             except Exception as e:
                 st.error(f"❌ Error al guardar modelos: {str(e)}")
 
-    # Mostrar reconstrucciones
+    # Mostrar reconstrucciones (funciona tanto si cargaste un modelo como si entrenaste uno)
     st.subheader("🔍 Reconstrucciones del modelo")
     col1, col2 = st.columns(2)
 
-    x_test_batch = next(x_test)
-    imgs_originales = x_test_batch[0][:10]
-    decoded = autoencoder.predict(imgs_originales)
-    orig_imgs    = [img.squeeze() for img in imgs_originales]
-    decoded_imgs = [img.squeeze() for img in decoded]
+    try:
+        x_test_batch = next(x_val)
+        imgs_originales = x_test_batch[0][:10]
+    except Exception:
+        st.warning("⚠️ No hay datos de validación para mostrar reconstrucciones.")
+        return
+
+    # Llamamos al modelo directamente en modo eager para evitar el error de predict()
+    tensor_input    = tf.convert_to_tensor(imgs_originales, dtype=tf.float32)
+    decoded_tensor  = autoencoder(tensor_input)
+    decoded         = decoded_tensor.numpy()
+
+    # Para mostrar en Streamlit, quitamos el canal extra
+    orig_imgs    = [img[:, :, 0] for img in imgs_originales]
+    decoded_imgs = [img[:, :, 0] for img in decoded]
 
     with col1:
         st.write("Imágenes originales")
@@ -124,6 +159,7 @@ def pestaña_autoencoder():
     with col2:
         st.write("Reconstrucciones")
         st.image(decoded_imgs, width=100)
+
 
 def pestaña_transformacion_dataset():
     st.header("🗂️ Transformador de imágenes a dataset")
@@ -138,10 +174,14 @@ def pestaña_transformacion_dataset():
             st.error("⚠️ Debes ingresar una ruta válida.")
         else:
             try:
-                total = transformar_dataset(carpeta_origen, carpeta_destino or "dataset_transformado")
+                total = transformar_dataset(
+                    carpeta_origen,
+                    carpeta_destino or "dataset_transformado"
+                )
                 st.success(f"✅ Dataset creado exitosamente con {total} imágenes procesadas.")
             except Exception as e:
                 st.error(f"❌ Error al procesar imágenes: {str(e)}")
+
 
 def main():
     st.set_page_config(layout="wide")
@@ -151,6 +191,7 @@ def main():
         pestaña_autoencoder()
     with tab_dataset:
         pestaña_transformacion_dataset()
+
 
 if __name__ == "__main__":
     main()
