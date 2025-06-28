@@ -1,4 +1,4 @@
-````markdown
+
 # ⚓ DenoiseSH v0.5-alpha – Diagnóstico visual de salmones con IA
 
 Interfaz minimalista y ultra intuitiva desarrollada en Streamlit para detectar automáticamente la salud de salmones mediante redes neuronales y clasificación robusta. Versión actualizada con nuevas funcionalidades, mayor eficacia y una mejor experiencia de usuario.
@@ -13,16 +13,13 @@ Interfaz minimalista y ultra intuitiva desarrollada en Streamlit para detectar a
 - **Aumento significativo de accuracy:** Ajuste dinámico del umbral de decisión directamente desde la interfaz.
 - **Evaluación continua:** Nuevo loop automático que permite pruebas continuas mostrando métricas en tiempo real.
 
----
 
 ## 🔧 Gestión y exportación de modelos
 
 **Importante:** Los modelos no se exportan directamente desde la app por seguridad y consistencia. Deben ser generados externamente con los siguientes comandos:
 
 - **Encoder (Keras)**:
-```python
 encoder.save("encoder.keras")
-````
 
 * **Clasificador (Scikit-learn)**:
 
