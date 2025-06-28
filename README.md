@@ -19,8 +19,9 @@ Interfaz minimalista y ultra intuitiva desarrollada en Streamlit para detectar a
 **Importante:** Los modelos no se exportan directamente desde la app por seguridad y consistencia. Deben ser generados externamente con los siguientes comandos:
 
 - **Encoder (Keras)**:
+```python
 encoder.save("encoder.keras")
-
+```
 * **Clasificador (Scikit-learn)**:
 
 ```python
